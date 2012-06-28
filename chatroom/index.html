@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Chatroom</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="http://127.0.0.1:8080/node_modules/socket.io/lib/socket.io.js"></script>
+    <script>
+        var socket = new io.Socket('127.0.0.1', { port: 8080, connectionTimeOut: 3000 });
+        var buffer = [];
+        socket.connect();
+
+        socket.on('connection', function (client) {
+            // on connection, send the buffer and tell broadcast, to the server, the connection
+            client.send({ buffer: buffer });
+            client.broadcast({ announcement: client.sessionId + ' connected' });
+        });
+
+        socket.on('connect_failed', function () {
+            alert('The connection to the server failed.');
+        });
+
+        socket.on('message', function (message) {
+            // when the client gets a message from the server,
+            // add it to the buffer and display the message
+            buffer.push(message);
+            if (buffer.length > 15)
+                buffer.shift();
+            appendMessage(message.message);
+        });
+
+        socket.on('disconnect', function (client) {
+            // on disconnect, broadcast it to the server
+            client.broadcast({ announcement: client.sessionId + ' disconnected' });
+        });
+
+        // send a message to the server
+        function sendMessage(message) {
+            if (!message) {
+                // get the message from the input field
+                var msg = $("input#message").val();
+                $("input#message").val('');
+            } else {
+                var msg = message;
+            }
+            if (msg.length > 0) { // stop annoying empty messages
+                if (socket.send({ "message": msg })) // send the message
+                    appendMessage('You: ' + msg); // show the message
+            }
+        }
+
+        // show the message on the screen
+        function appendMessage(message) {
+            $('div#chat-box').append('<div class="msg">' + message + '</div>');
+        }
+    </script>
+</head>
+<body>
+    <div id="chat-box"></div>
+    <div id="chat-field">
+      <form method="post" action="" onsubmit="return false;">
+        <input type="text" name="message" id="message" value="" /><input id="client" name="client" value="" type="hidden" /><input type="submit" class="button" name="send" id="send" value="Send" onclick="sendMessage();" />
+      </form>
+    </div>
+</body>
+</html>
