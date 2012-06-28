@@ -4,16 +4,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Chatroom</title>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script src="http://127.0.0.1:8080/node_modules/socket.io/lib/socket.io.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
     <script>
-        var socket = new io.Socket('127.0.0.1', { port: 8080, connectionTimeOut: 3000 });
+        var socket = new io.connect('http://localhost');
         var buffer = [];
-        socket.connect();
 
         socket.on('connection', function (client) {
             // on connection, send the buffer and tell broadcast, to the server, the connection
-            client.send({ buffer: buffer });
-            client.broadcast({ announcement: client.sessionId + ' connected' });
+            client.emit('message',{ buffer: buffer });
+            client.emit('announce1',{ announcement: client.id + ' connected' });
         });
 
         socket.on('connect_failed', function () {
@@ -29,22 +28,27 @@
             appendMessage(message.message);
         });
 
+		socket.on('announce', function (message) {
+            appendMessage(message.message);
+        });
+
         socket.on('disconnect', function (client) {
             // on disconnect, broadcast it to the server
-            client.broadcast({ announcement: client.sessionId + ' disconnected' });
+            client.emit('message',{ message: client.id + ' disconnected' });
         });
 
         // send a message to the server
         function sendMessage(message) {
+			var msg
             if (!message) {
                 // get the message from the input field
-                var msg = $("input#message").val();
+                msg = $("input#message").val();
                 $("input#message").val('');
             } else {
-                var msg = message;
+                msg = message;
             }
             if (msg.length > 0) { // stop annoying empty messages
-                if (socket.send({ "message": msg })) // send the message
+                if (socket.emit('message',{ message: msg })) // send the message
                     appendMessage('You: ' + msg); // show the message
             }
         }
