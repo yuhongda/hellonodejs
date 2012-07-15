@@ -1,10 +1,10 @@
 var url = require('url');
-exports.loadparams = function(req,res,next){
+exports.loadParams = function(req,res,next){
 	req.requrl = url.parse(req.url, true);
-	req.a = (req.requrl.query.a && !IsNaN(req.requrl.query.a))
+	req.a = (req.requrl.query.a && !isNaN(req.requrl.query.a))
 			? new Number(req.requrl.query.a)
 			: NaN;
-	req.b = (req.requrl.query.b && !IsNaN(req.requrl.query.b))
+	req.b = (req.requrl.query.b && !isNaN(req.requrl.query.b))
 			? new Number(req.requrl.query.b)
 			: NaN;
 	if(next) next();
@@ -27,7 +27,7 @@ exports.page = function(title, navbar, content){
 		"<td>{navbar}</td><td>{content}</td>",
 		"</tr></table></body></html>"]
 		.join('\n')
-		.replace('{title}', title, "g")
+		.replace(/{title}/g, title)
 		.replace('{navbar}', navbar, "g")
 		.replace('{content}', content, "g");
 }
