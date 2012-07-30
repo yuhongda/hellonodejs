@@ -1,4 +1,6 @@
-﻿<%if(req.a && req.b){ %>
+﻿<% layout('layout') -%>
+
+<%if(req.a && req.b){ %>
     <p class="result">
         <%= req.a %> * <%= req.b %> = <%= req.result %>
     </p>
