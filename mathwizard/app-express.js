@@ -2,7 +2,13 @@ var htutil = require('./htutil'),
 	math = require('./math'),
 	express = require('express'),
     jade = require('jade'),
-    engine = require('ejs-locals');
+    engine = require('ejs-locals'),
+    mongo = require('mongodb');
+
+var DB = mongo.Db,
+    Connection = mongo.Connection,
+    Server = mongo.Server,
+    BSON = mongo.BSONNative;
 	
 var app = express.createServer(
 	express.logger()
@@ -54,6 +60,24 @@ app.get('/factorial', htutil.loadParams, function(req, res){
 });
 app.get('/404', function(req, res){
 	res.send('NOT Found ' + req.url);
+});
+
+//mongoDB test
+app.get('/mongodbTest', function (req, res) {
+    var db = new DB('test', new Server('localhost', Connection.DEFAULT_PORT, {}), { native_parser: false }),
+        results = [];
+    db.open(function (err, db) {
+        db.collection('product', function (err, collection) {
+            collection.find(function (err, cursor) {
+                cursor.each(function (err, item) {
+                    if (item != null)
+                        results.push({ name: item.name });
+                    else
+                        res.render('mongodb.ejs', { products: results });
+                });
+            });
+        });
+    });
 });
 
 app.listen(8124);
