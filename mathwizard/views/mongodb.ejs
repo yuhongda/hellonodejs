@@ -1,4 +1,7 @@
-﻿<ul>
+﻿<% layout('layout') -%>
+
+<h2>My Stuff</h2>
+<ul>
     <% for(var i = 0; i<products.length; i++) { %>
         <li><%=products[i].name %></li>
     <%} %>

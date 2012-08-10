@@ -1,18 +1,23 @@
 <html>
 <head>
     <title><%= title %></title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <style>
+        .del { margin-left: 10px; }
+    </style>
 </head>
 <body>
     <h1><%= title %></h1>
     <table>
         <tr>
-            <td>
+            <td style="vertical-align: top;">
                 <div class='navbar'>
                     <p><a href='/'>home</a></p>
                     <p><a href='/mult'>Multiplication</a></p>
                     <p><a href='/square'>Square's</a></p>
                     <p><a href='/factorial'>Factorial's</a></p>
                     <p><a href='/fibonacci'>Fibonacci's</a></p>
+                    <p><a href='/mongodbTest'>mongodbTest</a></p>
                 </div>
             </td>
             <td><%- body %></td>

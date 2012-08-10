@@ -1,13 +1,38 @@
 ﻿<% layout('layout') -%>
 
 <%if(req.a && req.b){ %>
+    <h2>This time</h2>
     <p class="result">
         <%= req.a %> * <%= req.b %> = <%= req.result %>
     </p>
 <%} %>
+
+<h2>History</h2>
+<ul class="history">
+    <% for(var i = 0; i<historys.length; i++) { %>
+        <li id="<%=historys[i]._id %>"><%=historys[i].record %><a href="#" class="del" rel="<%=historys[i]._id %>"><img src="images/del.gif" /></a></li>
+    <%} %>
+</ul>
+
 <p>Enter numbers to multiply</p>
 <form name='mult' action='/mult' method='get'>
 A: <input type='text' name='a' /><br/>
 B: <input type='text' name='b' />
 <input type='submit' value='Submit' />
 </form>
+
+<script type="text/javascript">
+$(function () {
+
+    $('.del').live('click', function (e) {
+        e.preventDefault();
+        var _id = $(this).attr('rel');
+        $.post("/del", { id: _id }, function (res) {
+            if (!res.error) {
+                $('#' + _id).remove();
+            }
+        });
+    });
+
+});
+</script>
